@@ -22,3 +22,33 @@ jupyter notebook
 ssh -N -L localhost:8888:localhost:8888 user@<server_ip>
 
 access http://localhost:8888 in browser
+
+## to use poetry
+
+### to install dependencies
+
+poetry install
+
+### to activate virtual environment
+
+poetry shell
+
+### to add new dependency
+
+poetry add <package_name>
+
+specific version: poetry add <package_name>@<version>
+
+### to add new dev dependency
+
+poetry add --dev <package_name>
+
+### to remove dependency
+
+poetry remove <package_name>
+
+### to update dependencies to latest compatible version
+
+poetry update
+
+poetry update <package_name>
