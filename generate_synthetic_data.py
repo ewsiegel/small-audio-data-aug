@@ -5,6 +5,7 @@ import logging
 from typing import List, Dict
 import random
 from llm_generated_utterances import utterances
+from emotion_to_wav import get_emotion_to_wav
 
 def generate_synthetic_samples(
     emotion_to_wav_files: Dict[str, List[str]],
@@ -78,9 +79,7 @@ def generate_synthetic_samples(
 # Example usage
 if __name__ == "__main__":
     # Example emotion to wav files mapping
-    emotion_to_wav_files = {
-        "sad": ["test.wav"]
-    }
+    emotion_to_wav_files = get_emotion_to_wav()
     
     # Generate synthetic samples
     generate_synthetic_samples(
