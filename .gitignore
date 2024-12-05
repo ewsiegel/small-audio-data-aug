@@ -162,3 +162,7 @@ cython_debug/
 #.idea/
 
 .ipynb_checkpoints
+
+# ignore untarred data
+MELD/train_splits/
+MELD/output_repetaed_splits_test/
