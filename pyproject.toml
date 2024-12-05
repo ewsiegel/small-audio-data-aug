@@ -8,6 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 torch = "^2.5.1"
+transformers = "^4.47.0"
+torchaudio = "^2.5.1"
+f5-tts = {git = "https://github.com/SWivid/F5-TTS.git"}
 
 
 [build-system]
