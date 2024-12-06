@@ -6,24 +6,31 @@ import os
 from typing import List
 
 class MELD:
-    def __init__(self, test_csv_name: str, train_csv_name: str, train_mp4_name: str, test_mp4_name: str):
+    def __init__(self, test_csv_name: str, train_csv_name: str, eval_csv_name: str, test_mp4_name: str, train_mp4_name: str, eval_mp4_name: str):
         self.file_pattern = r"dia(\d+)_utt(\d+)"  # filename regex
 
         # csv file names
         self.test_csv = test_csv_name
         self.train_csv = train_csv_name
+        self.eval_csv = eval_csv_name
 
         # folder names
         self.test_mp4 = test_mp4_name
         self.train_mp4 = train_mp4_name
+        self.eval_mp4 = eval_mp4_name
 
     def process(self) -> List[pd.DataFrame]:
         train_df = self._csv_to_parsed_df(self.train_csv).reset_index()
         test_df = self._csv_to_parsed_df(self.test_csv).reset_index()
+        eval_df = self._csv_to_parsed_df(self.eval_csv).reset_index()
 
         self._match_mp4_binary_to_df(train_df, self.train_mp4)
         self._match_mp4_binary_to_df(test_df, self.test_mp4)
-        return [train_df, test_df]
+        self._match_mp4_binary_to_df(eval_df, self.eval_mp4)
+
+        train_df_small = train_df.sample(frac=0.25, random_state=42) 
+
+        return [train_df, test_df, eval_df, train_df_small]
     
     def _csv_to_parsed_df(self, fname): 
         df = pd.read_csv(fname)
@@ -35,6 +42,7 @@ class MELD:
             [col for col in df.columns if col not in columns_to_keep],
             axis=1
         )
+        df = df[~df["Emotion"].isin(["Disgust", "Fear"])]
         df.groupby("Emotion").apply(lambda x: x)
         df = df.set_index(["Emotion"])
         df.sort_values(by=["Emotion", "Dialogue_ID", "Utterance_ID"], inplace=True)
@@ -53,6 +61,13 @@ class MELD:
 
 if __name__ == "__main__":
     # fill in with relevant file names
-    meld_data = MELD("MELD/MELD.Raw/test_sent_emo.csv", "MELD/MELD.Raw/train_sent_emo.csv", "MELD/train_splits", "MELD/output_repeated_splits_test")
-    [train_df, test_df] = meld_data.process()
-    print(train_df, test_df)
+    meld_data = MELD(
+        "MELD/MELD.Raw/test_sent_emo.csv",
+        "MELD/MELD.Raw/train_sent_emo.csv",
+        "MELD/MELD.Raw/dev_sent_emo.csv",
+        "MELD/output_repeated_splits_test",
+        "MELD/train_splits",
+        "MELD/dev_splits_complete"
+    )
+    [train_df, test_df, eval_df, train_df_small] = meld_data.process()
+    print(train_df, test_df, eval_df, train_df_small)
