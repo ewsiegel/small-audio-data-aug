@@ -6,7 +6,7 @@ import os
 from typing import List
 
 class MELD:
-    def __init__(self, test_csv_name: str, train_csv_name: str, test_mp4_name: str, train_mp4_name: str):
+    def __init__(self, test_csv_name: str, train_csv_name: str, train_mp4_name: str, test_mp4_name: str):
         self.file_pattern = r"dia(\d+)_utt(\d+)"  # filename regex
 
         # csv file names
@@ -18,8 +18,8 @@ class MELD:
         self.train_mp4 = train_mp4_name
 
     def process(self) -> List[pd.DataFrame]:
-        train_df = self._csv_to_parsed_df(self.train_csv)
-        test_df = self._csv_to_parsed_df(self.test_csv)
+        train_df = self._csv_to_parsed_df(self.train_csv).reset_index()
+        test_df = self._csv_to_parsed_df(self.test_csv).reset_index()
 
         self._match_mp4_binary_to_df(train_df, self.train_mp4)
         self._match_mp4_binary_to_df(test_df, self.test_mp4)
@@ -47,12 +47,9 @@ class MELD:
             if match:
                 dialogue_id = int(match.group(1))
                 utterance_id = int(match.group(2))
-                
-                # locate the matching row in the DataFrame
-                row_index = df[(df["Dialogue_ID"] == dialogue_id) & (df["Utterance_ID"] == utterance_id)].index
-                if len(row_index) > 0:
-                    df.loc[row_index, "MP4_fname"] = file
-        df = df.drop(["Dialogue_ID", "Utterance_ID"], axis=1, inplace=True)
+                mask = (df["Dialogue_ID"] == dialogue_id) & (df["Utterance_ID"] == utterance_id)
+                df.loc[mask, "MP4_fname"] = file
+        #df.drop(["Dialogue_ID", "Utterance_ID"], axis=1, inplace=True)
 
 if __name__ == "__main__":
     # fill in with relevant file names
