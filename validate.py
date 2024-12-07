@@ -29,10 +29,10 @@ def validate_directory(csv_path, wav_dir):
 
 # Validate each directory
 directories = [
-    ('./train/train.csv', './train'),
-    ('./test/test.csv', './test'),
-    ('./eval/eval.csv', './eval'),
-    ('./train_small/train_small.csv', './train_small')
+    ('./data/train/train.csv', './data/train'),
+    ('./data/test/test.csv', './data/test'),
+    ('./data/eval/eval.csv', './data/eval'),
+    ('./data/train_small/train_small.csv', './data/train_small')
 ]
 
 for csv_path, wav_dir in directories:

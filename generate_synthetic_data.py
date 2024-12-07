@@ -4,6 +4,7 @@ from pathlib import Path
 import logging
 from typing import List, Dict
 import random
+from tqdm import tqdm
 from llm_generated_utterances import utterances
 from emotion_to_wav import get_emotion_to_wav
 
@@ -15,12 +16,7 @@ def generate_synthetic_samples(
 ) -> None:
     """
     Generate synthetic audio samples for each wav file using the provided utterances.
-    
-    Args:
-        emotion_to_wav_files: Dictionary mapping emotion labels to lists of wav file paths
-        utterances: List of utterances to use for generation
-        n_samples_per_wav: Number of synthetic samples to generate per wav file
-        base_output_dir: Base directory for output files
+    Shows progress bar for each emotion being processed.
     """
     # Setup logging
     logging.basicConfig(level=logging.INFO)
@@ -35,52 +31,63 @@ def generate_synthetic_samples(
         output_dir = Path(base_output_dir) / emotion
         output_dir.mkdir(exist_ok=True)
         
-        logger.info(f"Processing emotion: {emotion}")
+        logger.info(f"\nProcessing emotion: {emotion}")
         
-        # Process each wav file
-        for wav_file in wav_files:
-            logger.info(f"Processing wav file: {wav_file}")
-            
-            # Generate n samples for this wav file
-            for _ in range(n_samples_per_wav):
-                # Generate unique filename for output
-                output_filename = f"synthetic_{uuid.uuid4()}.wav"
-                
-                # Randomly select an utterance
-                utterance = random.choice(utterances)
-                
-                try:
-                    # Run the synthetic generation script
-                    cmd = [
-                        "bash",
-                        "./run_synthetic.sh",
-                        wav_file,
-                        utterance,
-                        str(output_dir),
-                        output_filename
-                    ]
+        # Calculate total operations for this emotion
+        total_operations = len(wav_files) * n_samples_per_wav
+        
+        # Create progress bar for this emotion
+        with tqdm(total=total_operations, desc=f"{emotion}", unit='sample') as pbar:
+            # Process each wav file
+            for wav_file in wav_files:
+                # Generate n samples for this wav file
+                for _ in range(n_samples_per_wav):
+                    # Generate unique filename for output
+                    output_filename = f"synthetic_{uuid.uuid4()}.wav"
                     
-                    # Execute the command
-                    result = subprocess.run(
-                        cmd,
-                        check=True,
-                        capture_output=True,
-                        text=True
-                    )
+                    # Randomly select an utterance
+                    utterance = random.choice(utterances)
                     
-                    logger.info(f"Generated: {output_dir}/{output_filename}")
-                    
-                except subprocess.CalledProcessError as e:
-                    logger.error(f"Error generating sample: {e}")
-                    logger.error(f"Command output: {e.output}")
-                except Exception as e:
-                    logger.error(f"Unexpected error: {e}")
+                    try:
+                        # Run the synthetic generation script
+                        cmd = [
+                            "bash",
+                            "./run_synthetic.sh",
+                            wav_file,
+                            utterance,
+                            str(output_dir),
+                            output_filename
+                        ]
+                        
+                        # Execute the command
+                        result = subprocess.run(
+                            cmd,
+                            check=True,
+                            capture_output=True,
+                            text=True
+                        )
+                        
+                        # Update progress bar
+                        pbar.update(1)
+                        
+                    except subprocess.CalledProcessError as e:
+                        logger.error(f"\nError generating sample: {e}")
+                        logger.error(f"Command output: {e.output}")
+                        pbar.update(1)  # Still update progress even on error
+                    except Exception as e:
+                        logger.error(f"\nUnexpected error: {e}")
+                        pbar.update(1)  # Still update progress even on error
 
 # Example usage
 if __name__ == "__main__":
     # Example emotion to wav files mapping
     emotion_to_wav_files = get_emotion_to_wav()
-    
+    del emotion_to_wav_files["neutral"]
+    #del emotion_to_wav_files['joy']
+    #del emotion_to_wav_files['sadness']
+    #del emotion_to_wav_files['anger']
+    #del emotion_to_wav_files['surprise']
+
     # Generate synthetic samples
     generate_synthetic_samples(
         emotion_to_wav_files=emotion_to_wav_files,

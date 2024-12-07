@@ -1,7 +1,7 @@
 import pandas as pd
 
 def get_emotion_to_wav():
-    dir = "train_small"
+    dir = "./data/train_small"
     df = pd.read_csv(f"{dir}/train_small.csv")
     emotion_to_wav = {}
     for _, row in df.iterrows():
