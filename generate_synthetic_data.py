@@ -83,8 +83,9 @@ if __name__ == "__main__":
     # Example emotion to wav files mapping
     emotion_to_wav_files = get_emotion_to_wav()
     del emotion_to_wav_files["neutral"]
-    #del emotion_to_wav_files['joy']
-    #del emotion_to_wav_files['sadness']
+    del emotion_to_wav_files['joy']
+    del emotion_to_wav_files['sadness']
+    emotion_to_wav_files['anger'] = emotion_to_wav_files['anger'][142:]
     #del emotion_to_wav_files['anger']
     #del emotion_to_wav_files['surprise']
 

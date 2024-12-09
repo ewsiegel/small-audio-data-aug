@@ -32,7 +32,8 @@ directories = [
     ('./data/train/train.csv', './data/train'),
     ('./data/test/test.csv', './data/test'),
     ('./data/eval/eval.csv', './data/eval'),
-    ('./data/train_small/train_small.csv', './data/train_small')
+    ('./data/train_small/train_small.csv', './data/train_small'),
+    ('./data/synthetic_data/synthetic_data.csv', './data/synthetic_data'),
 ]
 
 for csv_path, wav_dir in directories:
