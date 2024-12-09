@@ -21,6 +21,12 @@ torch = "^2.5.1"
 tqdm = ">=4.42.0"
 transformers = ">=4.30.0"
 speechbrain = { path = "speechbrain" }
+torchaudio = "^2.5.1"
+f5-tts = {git = "https://github.com/SWivid/F5-TTS.git"}
+dropbox = "^12.0.2"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
