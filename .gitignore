@@ -166,3 +166,15 @@ cython_debug/
 # ignore untarred data
 MELD/train_splits/
 MELD/output_repetaed_splits_test/
+
+# SPEECHBRAIN STUFF
+# Pretrained & models folders
+**/model_checkpoints/
+**/pretrained_model_checkpoints/
+**/pretrained_models/
+
+# Results folders
+**/results/
+
+# Log folders
+**/log/

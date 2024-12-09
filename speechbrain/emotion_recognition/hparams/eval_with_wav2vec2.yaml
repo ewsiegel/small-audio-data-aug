@@ -1,0 +1,81 @@
+# ########################################
+# Evaluation configuration for emotion recognition from speech using wav2vec2
+# ########################################
+
+# Seed for reproducibility
+seed: 1993
+__set_seed: !apply:speechbrain.utils.seed_everything [!ref <seed>]
+
+# Dataset paths
+data_folder: /home/drew/6.7960/IEMOCAP_full_release  # e.g., /path/to/IEMOCAP_full_release
+output_folder: !ref results/eval_with_wav2vec2/<seed>
+save_folder: !ref <output_folder>/save
+test_log: !ref <output_folder>/test_log.txt
+
+# Model checkpoint path
+checkpoint_folder: /home/drew/6.7960/speechbrain/recipes/IEMOCAP/emotion_recognition/results/train_with_wav2vec2/1993/save/CKPT+2024-12-04+23-09-17+00
+
+# Wav2vec2 model configuration
+wav2vec2_hub: facebook/wav2vec2-base
+wav2vec2_folder: !ref <save_folder>/wav2vec2_checkpoint
+
+# Path where data manifest files will be stored
+test_annotation: !ref <output_folder>/test.json
+skip_prep: True  # Assuming data preparation is already done
+
+# The test logger writes evaluation statistics to a file, as well as stdout.
+test_logger: !new:speechbrain.utils.train_logger.FileTrainLogger
+    save_file: !ref <test_log>
+
+####################### Model Parameters #######################################
+encoder_dim: 768
+
+# Number of emotions
+out_n_neurons: 4 # (anger, happiness, sadness, neutral)
+
+dataloader_options:
+    batch_size: 4
+    shuffle: False
+    num_workers: 2  # 2 on linux but 0 works on windows
+    drop_last: False
+
+# Wav2vec2 encoder
+wav2vec2: !new:speechbrain.lobes.models.huggingface_transformers.wav2vec2.Wav2Vec2
+    source: !ref <wav2vec2_hub>
+    output_norm: True
+    freeze: False
+    freeze_feature_extractor: False
+    save_path: !ref <wav2vec2_folder>
+
+avg_pool: !new:speechbrain.nnet.pooling.StatisticsPooling
+    return_std: False
+
+output_mlp: !new:speechbrain.nnet.linear.Linear
+    input_size: !ref <encoder_dim>
+    n_neurons: !ref <out_n_neurons>
+    bias: False
+
+modules:
+    wav2vec2: !ref <wav2vec2>
+    output_mlp: !ref <output_mlp>
+
+log_softmax: !new:speechbrain.nnet.activations.Softmax
+    apply_log: True
+
+compute_cost: !name:speechbrain.nnet.losses.nll_loss
+
+error_stats: !name:speechbrain.utils.metric_stats.MetricStats
+    metric: !name:speechbrain.nnet.losses.classification_error
+        reduction: batch
+
+opt_class: !name:torch.optim.Adam
+    lr: 0.0001
+
+wav2vec2_opt_class: !name:torch.optim.Adam
+    lr: 0.00001
+
+checkpointer: !new:speechbrain.utils.checkpoints.Checkpointer
+    checkpoints_dir: !ref <checkpoint_folder>
+    recoverables:
+        model: !ref <modules>
+        wav2vec2: !ref <wav2vec2>
