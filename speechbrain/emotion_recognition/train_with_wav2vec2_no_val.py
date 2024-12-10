@@ -78,6 +78,7 @@ class EmoIdBrain(sb.Brain):
         # Store the train loss until the validation stage.
         if stage == sb.Stage.TRAIN:
             self.train_loss = stage_loss
+            self.checkpointer.save_checkpoint()
 
         # Summarize the statistics from the stage for record-keeping.
         else:
@@ -107,9 +108,10 @@ class EmoIdBrain(sb.Brain):
             )
 
             # Save the current checkpoint and delete previous checkpoints,
-            self.checkpointer.save_and_keep_only(
-                meta=stats, min_keys=["error_rate"] # keep lowest validation 1 - accuracy
-            )
+            #self.checkpointer.save_and_keep_only(
+            #    meta=stats, min_keys=["error_rate"] # keep lowest validation 1 - accuracy
+            #)
+            self.checkpointer.save_checkpoint()
 
         # We also write statistics about test data to stdout and to logfile.
         if stage == sb.Stage.TEST:
@@ -187,8 +189,8 @@ def dataio_prep(hparams):
     datasets = {}
     data_info = {
         "train": hparams["train_annotation"],
-        "valid": hparams["valid_annotation"],
-        "test": hparams["test_annotation"],
+        # "valid": hparams["valid_annotation"],
+        # "test": hparams["test_annotation"],
     }
     for dataset in data_info:
         datasets[dataset] = sb.dataio.dataset.DynamicItemDataset.from_json(
@@ -213,14 +215,6 @@ def dataio_prep(hparams):
 
 # RECIPE BEGINS!
 if __name__ == "__main__":
-    # Manually parse command line arguments
-    hparams_file = sys.argv[1]
-    test_mode = '--test' in sys.argv
-
-    # Remove the '--test' flag from sys.argv to avoid issues with sb.parse_arguments
-    if test_mode:
-        sys.argv.remove('--test')
-
     # Reading command line arguments.
     hparams_file, run_opts, overrides = sb.parse_arguments(sys.argv[1:])
 
@@ -237,6 +231,24 @@ if __name__ == "__main__":
         hyperparams_to_save=hparams_file,
         overrides=overrides,
     )
+
+    # from iemocap_prepare import prepare_data  # noqa E402
+
+    # # Data preparation, to be run on only one process.
+    # if not hparams["skip_prep"]:
+    #     sb.utils.distributed.run_on_main(
+    #         prepare_data,
+    #         kwargs={
+    #             "data_original": hparams["data_folder"],
+    #             "save_json_train": hparams["train_annotation"],
+    #             "save_json_valid": hparams["valid_annotation"],
+    #             "save_json_test": hparams["test_annotation"],
+    #             "split_ratio": hparams["split_ratio"],
+    #             "different_speakers": hparams["different_speakers"],
+    #             "test_spk_id": hparams["test_spk_id"],
+    #             "seed": hparams["seed"],
+    #         },
+    #     )
 
     # Create dataset objects "train", "valid", and "test".
     datasets = dataio_prep(hparams)
@@ -255,19 +267,17 @@ if __name__ == "__main__":
         checkpointer=hparams["checkpointer"],
     )
 
-    # Conditionally run training based on the test flag
-    if not test_mode:
-        # The `fit()` method iterates the training loop, calling the methods
-        # necessary to update the parameters of the model. Since all objects
-        # with changing state are managed by the Checkpointer, training can be
-        # stopped at any point, and will be resumed on next call.
-        emo_id_brain.fit(
-            epoch_counter=emo_id_brain.hparams.epoch_counter,
-            train_set=datasets["train"],
-            valid_set=datasets["valid"],
-            train_loader_kwargs=hparams["dataloader_options"],
-            valid_loader_kwargs=hparams["dataloader_options"],
-        )
+    # The `fit()` method iterates the training loop, calling the methods
+    # necessary to update the parameters of the model. Since all objects
+    # with changing state are managed by the Checkpointer, training can be
+    # stopped at any point, and will be resumed on next call.
+    emo_id_brain.fit(
+        epoch_counter=emo_id_brain.hparams.epoch_counter,
+        train_set=datasets["train"],
+        # valid_set=datasets["valid"],
+        train_loader_kwargs=hparams["dataloader_options"],
+        # valid_loader_kwargs=hparams["dataloader_options"],
+    )
 
     # Load the best checkpoint for evaluation
     test_stats = emo_id_brain.evaluate(
