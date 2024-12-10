@@ -407,6 +407,8 @@
 				<p>
 					The large train dataset will only be used as a baseline reference to evaluate the performance of our other
 					experiments.
+
+					TODO put table with all datasets and their sizes
 				</p>
 				<h1>Model for Downstream Task</h1>
 				<p>
@@ -484,6 +486,21 @@
 			</div>
 		    <div class="main-content-block">
 				<h2>Results</h2>
+				<h1>Baseline</h1>
+				<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+					<tr>
+						<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Dataset</th>
+						<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Test Accuracy</th>
+					</tr>
+					<tr>
+						<td style="border: 1px solid #ddd; padding: 8px;">full_MELD</td>
+						<td style="border: 1px solid #ddd; padding: 8px;">0.601</td>
+					</tr>
+					<tr>
+						<td style="border: 1px solid #ddd; padding: 8px;">small_MELD</td>
+						<td style="border: 1px solid #ddd; padding: 8px;">0.510</td>
+					</tr>
+				</table>
 				<h1>Method 1: Pre-training on a large similar dataset, and then fine-tuning on our small dataset.</h1>
 				<p>
 					TODO: paragraph on results for method 1.
