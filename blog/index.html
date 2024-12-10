@@ -486,29 +486,34 @@
 			</div>
 		    <div class="main-content-block">
 				<h2>Results</h2>
-				<h1>Baseline</h1>
+				<h1>Test Results</h1>
 				<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
 					<tr>
 						<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Dataset</th>
+						<th style="border: 1px solid #ddd; padding: 8px; text-align: left;"># Training Data Points</th>
 						<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Test Accuracy</th>
 					</tr>
 					<tr>
 						<td style="border: 1px solid #ddd; padding: 8px;">full_MELD</td>
+						<td style="border: 1px solid #ddd; padding: 8px;">9449</td>
 						<td style="border: 1px solid #ddd; padding: 8px;">0.601</td>
 					</tr>
 					<tr>
 						<td style="border: 1px solid #ddd; padding: 8px;">small_MELD</td>
+						<td style="border: 1px solid #ddd; padding: 8px;">2353</td>
 						<td style="border: 1px solid #ddd; padding: 8px;">0.510</td>
 					</tr>
+					<tr>
+						<td style="border: 1px solid #ddd; padding: 8px;">IEMOCAP + small_MELD</td>
+						<td style="border: 1px solid #ddd; padding: 8px;">6950</td>
+						<td style="border: 1px solid #ddd; padding: 8px;">0.515</td>
+					</tr>
+					<tr>
+						<td style="border: 1px solid #ddd; padding: 8px;">Synthetic + small_MELD</td>
+						<td style="border: 1px solid #ddd; padding: 8px;">14118</td>
+						<td style="border: 1px solid #ddd; padding: 8px;">0.535</td>
+					</tr>
 				</table>
-				<h1>Method 1: Pre-training on a large similar dataset, and then fine-tuning on our small dataset.</h1>
-				<p>
-					TODO: paragraph on results for method 1.
-				</p>
-				<h1>Method 2: Generating synthetic data from our small dataset, pre-training on the synthetic data, and then fine-tuning on our small dataset.</h1>
-				<p>
-					TODO: paragraph on results for method 2.
-				</p>
 				<h1>Wasserstein Distance</h1>
 				<p>
 					The Wasserstein distances between our small training dataset and each of the other datasets revealed an intuitive
