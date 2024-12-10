@@ -425,9 +425,6 @@
 					Our MLP is a single layer with no bias. It maps the 768 dimensional representation of the wav2vec2 encoder into one of our 5 classes (anger, joy, neutral, sadness, surprise).
 					This layer has only ~4k parameters.
 				</p>
-				<p>
-					While training, we update all of the weights in our MLP and most of the parameters for the wav2vec2. Specifically, for wav2vec2, we freeze the convolutional layer weights that process the input wav, but update the transformer block weights. These account for ~95% of the model’s parameters.
-				</p>
 				<div style="text-align: center; margin: 20px 0;">
 					<img src="images/Model_Drawing.jpg" width="512px" alt="Model Drawing"/>
 					<p style="margin-top: 5px; font-size: 14px;">Model Architecture</p>
@@ -438,8 +435,7 @@
 					For our large pre-training dataset that is similar to our Friends emotion classification task, we chose
 					the <a href="https://sail.usc.edu/iemocap/">IEMOCAP dataset</a>, which contains around 7,500 utterances
 					paired with its corresponding emotion label. The dataset is comprised of actor dialogues speaking English,
-					similar to the Friends dataset. After filtering for only our relevant emotion labels, our IEMOCAP dataset
-					had about 4600 utterances mapped to emotions.
+					similar to the Friends dataset.
 				</p>
 				<div style="text-align: center; margin: 20px 0;">
 					<audio controls style="width: 100%;">
@@ -447,13 +443,6 @@
 						Your browser does not support the audio element.
 					</audio>
 					<p style="margin-top: 5px; font-size: 14px;">Example IEMOCAP Audio Clip</p>
-				</div>
-				<p>
-					TODO: paragraph on method for pretraining on iemocap. how many epochs, hyperparameters, etc.
-				</p>
-				<p></p>
-					TODO: paragraph on fine-tuning on small dataset. how many epochs, hyperparameters, etc.
-				</p>
 				<h1>Method 2: Generating synthetic data from our small dataset, pre-training on the synthetic data, and then fine-tuning on our small dataset.</h1>
 				<p>
 					To generate synthetic data from our small dataset, we leveraged Microsoft's
@@ -489,11 +478,16 @@
 						<p style="margin-top: 5px; font-size: 14px;">Sadness</p>
 					</div>
 				</div>
+				<h1>Training Parameters</h1>
 				<p>
-					TODO: paragraph on method for pretraining on synthetic data. how many epochs, hyperparameters, etc.
+					While training, we update all of the weights in our MLP and most of the parameters for the wav2vec2. Specifically, for wav2vec2, we freeze the convolutional layer weights that process the input wav, but update the transformer block weights. These account for ~95% of the model’s parameters.
+
 				</p>
 				<p>
-					TODO: paragraph on fine-tuning on small dataset. how many epochs, hyperparameters, etc.
+					full_MELD: 6 epochs, w2v lr 1e-4, mlp lr 1e-3, weight decay 1e-4
+					small_MELD: 4 epochs, w2v lr 1e-4, mlp lr 1e-3, weight decay 1e-4
+					IEMOCAP + small_MELD: 4 epochs IEMOCAP, 4 epochs small_MELD, w2v lr 1e-4, mlp lr 1e-3, weight decay 1e-4
+					synthetic + small_MELD: 4 epochs synthetic, 4 epochs small_MELD, w2v lr 1e-4, mlp lr 1e-3, weight decay 1e-4
 				</p>
 
 			</div>
