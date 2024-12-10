@@ -197,15 +197,18 @@
 						<table class="header" align=left>
 								<tr>
 									<td colspan=4>
-										<span style="font-size: 32px; font-family: 'Courier New', Courier, monospace; /* Adds fallbacks */">A Grand Unified Theory of Deep Learning</span>
+										<span style="font-size: 32px; font-family: 'Courier New', Courier, monospace; /* Adds fallbacks */">Coping with Small Audio Data: A Theoretical and Practical Approach</span>
 									</td>
 								</tr>
 								<tr>
 										<td align=left>
-												<span style="font-size:17px"><a href="your_website">Your name</a></span>
+												<span style="font-size:17px"><a href="https://github.com/ewsiegel">Ethan Siegel</a></span>
 										</td>
 										<td align=left>
-												<span style="font-size:17px"><a href="your_partner's_website">Your partner's name</a></span>
+												<span style="font-size:17px"><a href="https://github.com/drew-g-ross">Drew Ross</a></span>
+										</td>
+										<td align=left>
+												<span style="font-size:17px"><a href="https://github.com/jerryylu48">Jerry Lu</a></span>
 										</td>
 								<tr>
 									<td colspan=4 align=left><span style="font-size:18px">Final project for 6.7960, MIT</span></td>
@@ -222,8 +225,10 @@
           <div style="position:fixed; max-width:inherit; top:max(20%,120px)">
               <b style="font-size:16px">Outline</b><br><br>
               <a href="#intro">Introduction</a><br><br>
-              <a href="#does_x_do_y">Does X do Y?</a><br><br>
-              <a href="#implications_and_limitations">Implications and limitations</a><br><br>
+              <a href="#solutions">Solutions</a><br><br>
+              <a href="#implementation">Implementation</a><br><br>
+              <a href="#results">Results</a><br><br>
+              <a href="#implications_and_limitations">Implications and Limitations</a><br><br>
           </div>
 				</div>
 		    <div class="main-content-block">
@@ -239,87 +244,191 @@
 				<div class="margin-left-block">
 				</div>
 		    <div class="main-content-block">
-						<h1>Introduction</h1>
-            Motivate your project. What question are you asking. Why is it unanswered so far? What gap in the literature or practice are you filling?
-            Why is it important?
+						<h2>Introduction</h2>
+            <p>
+				Audio data is a crucial component of many speech-oriented applications and modeling tasks, 
+				but it is often difficult to obtain and process audio data that is robust, accurate, and representative for a downstream task. 
+				Many existing methods for audio processing, especially modern deep learning-based approaches, are designed for large datasets, 
+				but in practice, audio data is often limited in quantity and quality, especially since audio data is an inherently noisy and complex signal.
+				This can lead to suboptimal performance and reduced accuracy in downstream tasks.
+			</p>
+			<p>
+				Our goal is to explore and evaluate state-of-the-art approaches for training deep learning models for downstream audio tasks
+				when the initial audio data is limited. To do this, we will focus on training deep learning models for a downstream
+				speech emotion classification task. We will pay attention to the methods used to generate the training data and how it
+				affects the performance of the model, and evaluate implications from a practical and theoretical perspective.
+			</p>
+			<p>
+				Specifically, we will focus on the techniques of pre-training on a larger dataset and synthetic data generation
+				as two practical approaches to handling the small audio data problem. Then, we will leverage the Wasserstein Distance
+				(Earth Mover's Distance) between two datasets as a theoretical way to evaluate the expected performance of these
+				approaches.
+			</p>
+			<p>
+				In doing so, we aim to develop an understanding for handling small audio data
+				for deep learning in a disciplined way, and advance methods to do larger scale machine learning on audio
+				based modalities.
+			</p>
 		    </div>
 		    <div class="margin-right-block">
 						Margin note that clarifies some detail #main-content-block for intro section.
 		    </div>
 		</div>
 
-		<div class="content-margin-container" id="does_x_do_y">
+		<div class="content-margin-container" id="solutions">
 				<div class="margin-left-block">
 				</div>
 		    <div class="main-content-block">
-					<h1>Does X do Y?</h1>
-				  It is well known that Y does Y. And this has raised the question does X do Y? Because if Y does Y then it stands to reason that X does Y.
-          But we cannot answer this until we realize the Z implies Y and X can be linked to Z.<br><br>
-
-          Now let's write some math!<br>
-          <center>
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
-              <mrow>
-                <mrow>
-                  <mo>&#x2202;</mo>
-                  <mi>y</mi>
-                </mrow>
-                <mo>/</mo>
-                <mrow>
-                  <mo>&#x2202;</mo>
-                  <mi>x</mi>
-                </mrow>
-              </mrow>
-              <mo>=</mo>
-              <mi>x</mi>
-            </math>
-          </center>
-          <br>
-          It's probably best to ask an LLM to help do the web
-          formatting for math. You can tell it "convert this latex equation into MathML: $$\frac{\partial dy}{\partial dx} = x$$"
-          But it took me a few tries. So, if you get frustrated, you can embed an image of the equation, or use other packages for
-          rendering equations on webpages.
+					<h2>Solutions for Handling Small Audio Data: Practical and Theoretical Considerations</h2>
+					<p>
+						Let's break down our two main approaches to leveraging small audio data for deep learning tasks
+						that require large amounts of data, when we only have a small dataset:
+					</p>
+					<h1>Method 1: Pre-training on a large similar dataset, and then fine-tuning on our small dataset.</h1>
+					<p>
+						This method involves finding a large dataset that is similar to our target task that our small dataset
+						was collected from, pre-training for many epochs on this large dataset, and then fine-tuning on our small dataset
+						for a few epochs.
+					</p>
+					<p>
+						A successful implementation of this method would result in a robust general pretrained model that can be fine-tuned
+						on our small dataset to successfully perform the downstream speech emotion classification task. This would require
+						ample transfer learning from the large dataset, requiring that the large dataset is similar enough to our small dataset.
+					</p>
+					<p>
+						The advantage of this method is that it is much more simple and straightforward to find existing data than
+						generate or augment new data. However, the primary disadvantage is that the large dataset may not be exactly
+						similar to our small dataset, and so the pretrained model may not be able to generalize as well to the downstream task.
+					</p>
+					<h1>Method 2: Generating synthetic data from our small dataset, pre-training on the synthetic data, and then fine-tuning on our small dataset.</h1>
+					<p>
+						This method involves generating synthetic data from our small dataset, pre-training for many epochs on the synthetic data,
+						and then fine-tuning for a few epochs on our small dataset.
+					</p>
+					<p>
+						A successful implementation of this method would involve generating a synthetic dataset that is similar to our small dataset,
+						pre-training a task-specific model on the synthetic data, and then fine-tuning on our small dataset for precision.
+					</p>
+					<p>
+						The advantage of this method is that if we can generate a synthetic dataset that is verysimilar to our small dataset,
+						this would allow for much more accurate and generalizable training. However, the primary disadvantage is the difficulty
+						in generating high quality synthetic data in the audio domain.
+					</p>
+					<h1>Theoretical Consideration: Wasserstein Distance</h1>
+					<p>
+						TODO: paragraph on Wasserstein Distance.
+					</p>
+					<br>
+					<p>
+						This project will involve testing an implementation of these two methods, evaluating their performance,
+						then analyzing the results from the mentioned theoretical perspective.
+					</p>
 		    </div>
 		    <div class="margin-right-block" style="transform: translate(0%, -100%);"> <!-- you can move the margin notes up and down with translate -->
           Interestingly, Plato also asked if X does Y, in <a href="#ref_1">[1]</a>.
 		    </div>
 		</div>
 
-		<div class="content-margin-container">
-				<div class="margin-left-block">
-				</div>
+		<div class="content-margin-container" id="implementation">
+			<div class="margin-left-block">
+			</div>
 		    <div class="main-content-block">
-            <h1>Another section</h1>
-            In this section we embed a video:
-						<video class='my-video' loop autoplay muted style="width: 725px">
-								<source src="./images/mtsh.mp4" type="video/mp4">
-						</video>
+				<h2>Implementation</h2>
+				<p>
+					Here we will discuss the implementation of the two methods described in the previous section.
+				</p>
+				<h1>Data and Preprocessing</h1>
+				<p>
+					First, let's discuss the data we will be using. Our downstream task will be speech emotion classification
+					on the <a href="https://affective-meld.github.io/">MELD dataset</a>, which contains around 15,000 utterances
+					from the TV show Friends paired with their corresponding emotion labels. Thus, our downstream task is to
+					predict the emotion of new utterances from Friends. For our purposes, we chose to only focus on
+					datapoints labelled with the emotion labeles "neutral", "joy", "sadness", "anger", and "surprise".
+				</p>
+				<p>
+					After filtering the dataset to only include these labels and splitting into train/test/validation sets, we have
+					roughly 9500 labelled utterances for training, 4500 for testing, and 1000 for validation. Additionally, to
+					simulate having a small training dataset, we sampled 1 of every 4 training datapoints to create a small training
+					dataset of roughly 2350 samples.
+				</p>
+				<p>
+					The large train dataset will only be used as a baseline reference to evaluate the performance of our other
+					experiments.
+				</p>
+				<b>Model for Downstream Task</b>
+				<p>
+					TODO: paragraph on model for downstream task.
+				</p>
+				<h1>Method 1: Pre-training on a large similar dataset, and then fine-tuning on our small dataset.</h1>
+				<p>
+					For our large pre-training dataset that is similar to our Friends emotion classification task, we chose
+					the <a href="https://sail.usc.edu/iemocap/">IEMOCAP dataset</a>, which contains around 7,500 utterances
+					paired with its corresponding emotion label. The dataset is comprised of actor dialogues speaking English,
+					similar to the Friends dataset.
+				</p>
+				<p>
+					TODO: paragraph on method for pretraining on iemocap. how many epochs, hyperparameters, etc.
+				</p>
+				<p></p>
+					TODO: paragraph on fine-tuning on small dataset. how many epochs, hyperparameters, etc.
+				</p>
+				<h1>Method 2: Generating synthetic data from our small dataset, pre-training on the synthetic data, and then fine-tuning on our small dataset.</h1>
+				<p>
+					To generate synthetic data from our small dataset, we leveraged Microsoft's
+					<a href="https://www.microsoft.com/en-us/research/project/e2-tts/">E2TTS</a> model, which is a text-to-speech
+					model that can be used to generate speech from text, replicating the emotion of an inputted utterance.
+					First, we used a LLM to generate a large amount of common English utterances in text. Next, for each utterance
+					in the small dataset, we inputted the utterance and 5randomly selected LLM generated text utterances into
+					the E2TTS model, and generated 5 new audio samples that are saying new text in the same emotion as the inputted
+					utterance. This process allowed us to generate a synthetic dataset of around 12,000 samples whose distribution
+					of emotions matched that of our small dataset.
+				</p>
+				<p>
+					TODO: paragraph on method for pretraining on synthetic data. how many epochs, hyperparameters, etc.
+				</p>
+				<p>
+					TODO: paragraph on fine-tuning on small dataset. how many epochs, hyperparameters, etc.
+				</p>
+			</div>
+			<div class="margin-right-block">
+			</div>
+		</div>
+
+		<div class="content-margin-container" id="results">
+			<div class="margin-left-block">
+			</div>
+		    <div class="main-content-block">
+				<h2>Results</h2>
+				<p>
+					TODO: paragraph on results.
+				</p>
 		    </div>
 		    <div class="margin-right-block">
-					A caption for the video could go here.
 		    </div>
 		</div>
 
 		<div class="content-margin-container" id="implications_and_limitations">
-				<div class="margin-left-block">
-				</div>
+			<div class="margin-left-block">
+			</div>
 		    <div class="main-content-block">
-						<h1>Implications and limitations</h1>
-						Let's end with some discussion of the implications and limitations.
+				<h2>Implications and Limitations</h2>
+				<p>
+					TODO: paragraph on implications and limitations.
+				</p>
 		    </div>
 		    <div class="margin-right-block">
 		    </div>
 		</div>
 
 		<div class="content-margin-container" id="citations">
-				<div class="margin-left-block">
-				</div>
+			<div class="margin-left-block">
+			</div>
 		    <div class="main-content-block">
-						<div class='citation' id="references" style="height:auto"><br>
-							<span style="font-size:16px">References:</span><br><br>
-							<a id="ref_1"></a>[1] <a href="https://en.wikipedia.org/wiki/Allegory_of_the_cave">Allegory of the Cave</a>, Plato, c. 375 BC<br><br>
-							<a id="ref_2"></a>[2] <a href="">A Human-Level AGI</a>, OpenAI, 2025<br><br>
-						</div>
+				<div class='citation' id="references" style="height:auto"><br>
+					<span style="font-size:16px">References:</span><br><br>
+					<a id="ref_1"></a>[1] <a href="https://en.wikipedia.org/wiki/Allegory_of_the_cave">Allegory of the Cave</a>, Plato, c. 375 BC<br><br>
+					<a id="ref_2"></a>[2] <a href="">A Human-Level AGI</a>, OpenAI, 2025<br><br>
+				</div>
 		    </div>
 		    <div class="margin-right-block">
             <!-- margin notes for reference block here -->
