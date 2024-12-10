@@ -229,7 +229,6 @@
               <a href="#implementation">Implementation</a><br><br>
               <a href="#results">Results</a><br><br>
               <a href="#analysis">Analysis</a><br><br>
-              <a href="#implications_and_limitations">Implications and Limitations</a><br><br>
           </div>
 				</div>
 		    <div class="main-content-block">
@@ -566,26 +565,38 @@
 		    <div class="main-content-block">
 				<h2>Analysis</h2>
 				<p>
-					TODO: paragraph on analysis of the results.
+					The results of our study demonstrate promising trends for handling small audio datasets in deep learning applications, 
+					while also highlighting certain limitations and areas for improvement. Our findings indicate that pre-training on synthetic 
+					data generated to match the target dataset’s distribution yields better performance improvements than pre-training on a similar 
+					real-world dataset, such as IEMOCAP. This is quantitatively supported by the Wasserstein distance analysis, which showed that the 
+					synthetic data distribution is closer to the target dataset distribution compared to IEMOCAP. The observed improvements in test 
+					accuracy, though incremental, suggest that synthetic data generation may provide a viable solution to the small audio data problem 
+					in certain contexts.
 				</p>
-		    </div>
-		    <div class="margin-right-block">
-		    </div>
-		</div>
-
-		<div class="content-margin-container" id="implications_and_limitations">
-			<div class="margin-left-block">
-			</div>
-		    <div class="main-content-block">
-				<h2>Implications and Limitations</h2>
-				<p>
-					TODO: paragraph on implications and limitations.
-				</p>
-			    	<h2>Extensions</h2>
-			    	<p>
-					Incorporating Wasserstein distance into model fine-tuning: TODO
-					Implementing a Wasserstein Generative Adversarial Network (WGAN): TODO
-					
+					However, there are several limitations to our approach that warrant further investigation. Firstly, the synthetic data generation 
+					process, while effective in this study, relies heavily on the quality and fidelity of the TTS (text-to-speech) model and the ability 
+					of the LLM to generate contextually relevant utterances. Suboptimal performance of either component could reduce the effectiveness 
+					of this method. Additionally, the computational cost of generating high-quality synthetic data and pre-training models on this data 
+					can be significant, which may limit the practical applicability of this approach in resource-constrained environments.
+				<p>	
+					Another limitation lies in the relatively modest gains in accuracy achieved by either pre-training approach. While the synthetic 
+					dataset demonstrated better alignment with the target distribution, the performance gap between the small dataset and the full dataset 
+					remains significant. This suggests that there may be other factors influencing model performance, such as inherent noise in the audio 
+					data, limitations of the pre-training or fine-tuning methods, or the capacity of the model architecture itself to effectively learn 
+					from small datasets.
+				</p>	
+					Further work in this area is needed to refine and extend these approaches. One potential avenue for exploration is the incorporation 
+					of Wasserstein distance into the model training process itself, potentially as part of a loss function to ensure closer alignment 
+					between the synthetic or pre-training dataset and the target dataset. Additionally, methods such as Wasserstein Generative Adversarial 
+					Networks (WGANs) could be employed to generate even higher-fidelity synthetic data that better captures the nuances of the target 
+					distribution. Exploring alternative metrics for dataset similarity, as well as transfer learning techniques tailored specifically for 
+					audio tasks, may also yield further insights and improvements.
+				<p>	
+					In summary, our results provide evidence that synthetic data generation and the use of Wasserstein distance for dataset evaluation 
+					can meaningfully address the challenges of training deep learning models with small audio datasets. However, the observed limitations 
+					suggest that these methods are not yet fully optimized and highlight the need for continued research to better understand and improve 
+					these techniques. By addressing these challenges, future work in this domain can help unlock the potential for robust, scalable audio 
+					modeling in resource-constrained scenarios.is of the results.
 				</p>
 		    </div>
 		    <div class="margin-right-block">
