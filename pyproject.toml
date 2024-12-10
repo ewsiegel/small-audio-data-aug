@@ -17,10 +17,10 @@ pre-commit = ">=2.3.0"
 pygtrie = ">=2.1,<3.0"
 sentencepiece = ">=0.1.91"
 SoundFile = { version = "*", markers = "sys_platform == 'win32'" }
+speechbrain = { path = "speechbrain", develop = true }
 torch = "^2.5.1"
 tqdm = ">=4.42.0"
 transformers = ">=4.30.0"
-speechbrain = { path = "speechbrain" }
 torchaudio = "^2.5.1"
 f5-tts = {git = "https://github.com/SWivid/F5-TTS.git"}
 dropbox = "^12.0.2"

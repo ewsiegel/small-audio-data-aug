@@ -357,3 +357,30 @@ def load_session(pathSession):
                         [path, label, utterance[2][15]]
                     )
     return improvisedUtteranceList
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Prepare IEMOCAP data")
+    parser.add_argument("data_original", type=str, help="Path to the folder where the original IEMOCAP dataset is stored.")
+    parser.add_argument("save_json_train", type=str, help="Path where the train data specification file will be saved.")
+    parser.add_argument("save_json_valid", type=str, help="Path where the validation data specification file will be saved.")
+    parser.add_argument("save_json_test", type=str, help="Path where the test data specification file will be saved.")
+    parser.add_argument("--split_ratio", type=int, nargs=3, default=[80, 10, 10], help="Split ratios for train, valid, and test sets.")
+    parser.add_argument("--different_speakers", action="store_true", help="If set, splits data so speakers are NOT shared among splits.")
+    parser.add_argument("--test_spk_id", type=int, default=1, help="Id of speaker used for test set, 10 speakers in total.")
+    parser.add_argument("--seed", type=int, default=12, help="Seed for reproducibility.")
+
+    args = parser.parse_args()
+
+    prepare_data(
+        args.data_original,
+        args.save_json_train,
+        args.save_json_valid,
+        args.save_json_test,
+        split_ratio=args.split_ratio,
+        different_speakers=args.different_speakers,
+        test_spk_id=args.test_spk_id,
+        seed=args.seed,
+    )
+

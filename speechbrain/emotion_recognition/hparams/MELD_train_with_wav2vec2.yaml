@@ -1,6 +1,7 @@
 # ########################################
 # Emotion recognition from speech using wav2vec2
-# For more wav2vec2/HuBERT results, please see https://arxiv.org/pdf/2111.02735.pdf
+# If checkpoints exist in the save_folder, the model will be loaded from the checkpoint
+# If want to train from scratch, use a seed that does not have checkpoints saved in results/train_with_wav2vec2/<seed>
 # ########################################
 
 # Seed needs to be set at top of yaml, before objects with parameters are made
@@ -23,9 +24,9 @@ different_speakers: False
 test_spk_id: 1
 
 # Path where data manifest files will be stored
-train_annotation: /home/drew/6.7960/speechbrain/recipes/IEMOCAP/emotion_recognition/meld_json/train.json
-valid_annotation: /home/drew/6.7960/speechbrain/recipes/IEMOCAP/emotion_recognition/meld_json/eval.json
-test_annotation: /home/drew/6.7960/speechbrain/recipes/IEMOCAP/emotion_recognition/meld_json/test.json
+train_annotation: /home/drew/6.7960/small-audio-data-aug/speechbrain/emotion_recognition/MELD/meld_json/train.json
+valid_annotation: /home/drew/6.7960/small-audio-data-aug/speechbrain/emotion_recognition/MELD/meld_json/eval.json
+test_annotation: /home/drew/6.7960/small-audio-data-aug/speechbrain/emotion_recognition/MELD/meld_json/test.json
 split_ratio: [80, 10, 10]
 skip_prep: True
 
@@ -36,9 +37,10 @@ train_logger: !new:speechbrain.utils.train_logger.FileTrainLogger
 ckpt_interval_minutes: 15 # save checkpoint every N min
 
 ####################### Training Parameters ####################################
-number_of_epochs: 30
+number_of_epochs: 10
 batch_size: 4
 lr: 0.0001
+weight_decay: 0.0001
 lr_wav2vec2: 0.00001
 
 #freeze all wav2vec2
@@ -114,8 +116,8 @@ lr_annealing_wav2vec2: !new:speechbrain.nnet.schedulers.NewBobScheduler
 checkpointer: !new:speechbrain.utils.checkpoints.Checkpointer
     checkpoints_dir: !ref <save_folder>
     recoverables:
-        # model: !ref <model> # uncomment to load mlp from checkpoint (keep commented to train from scratch)
+        model: !ref <model> # make no checkpoint exists for mlp in save_folder if you want to train from scratch
         wav2vec2: !ref <wav2vec2>
-        # lr_annealing_output: !ref <lr_annealing> # uncomment to resume training from checkpoint
+        lr_annealing_output: !ref <lr_annealing>
         lr_annealing_wav2vec2: !ref <lr_annealing_wav2vec2>
         counter: !ref <epoch_counter>

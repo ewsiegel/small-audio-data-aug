@@ -3,7 +3,7 @@
 # ########################################
 
 # Seed for reproducibility
-seed: 1993
+seed: 6969
 __set_seed: !apply:speechbrain.utils.seed_everything [!ref <seed>]
 
 # Dataset paths
@@ -13,14 +13,14 @@ save_folder: !ref <output_folder>/save
 test_log: !ref <output_folder>/test_log.txt
 
 # Model checkpoint path
-checkpoint_folder: /home/drew/6.7960/speechbrain/recipes/IEMOCAP/emotion_recognition/results/train_with_wav2vec2/1993/save/CKPT+2024-12-04+23-09-17+00
+checkpoint_folder: /home/drew/6.7960/small-audio-data-aug/speechbrain/emotion_recognition/results/train_with_wav2vec2/6969/save
 
 # Wav2vec2 model configuration
 wav2vec2_hub: facebook/wav2vec2-base
 wav2vec2_folder: !ref <save_folder>/wav2vec2_checkpoint
 
 # Path where data manifest files will be stored
-test_annotation: !ref <output_folder>/test.json
+test_annotation: /home/drew/6.7960/small-audio-data-aug/speechbrain/emotion_recognition/MELD/meld_json/test.json
 skip_prep: True  # Assuming data preparation is already done
 
 # The test logger writes evaluation statistics to a file, as well as stdout.
@@ -31,7 +31,7 @@ test_logger: !new:speechbrain.utils.train_logger.FileTrainLogger
 encoder_dim: 768
 
 # Number of emotions
-out_n_neurons: 4 # (anger, happiness, sadness, neutral)
+out_n_neurons: 5 # (anger, happiness, sadness, neutral)
 
 dataloader_options:
     batch_size: 4
@@ -59,6 +59,9 @@ modules:
     wav2vec2: !ref <wav2vec2>
     output_mlp: !ref <output_mlp>
 
+model: !new:torch.nn.ModuleList
+    - [!ref <output_mlp>]
+
 log_softmax: !new:speechbrain.nnet.activations.Softmax
     apply_log: True
 
@@ -77,5 +80,7 @@ wav2vec2_opt_class: !name:torch.optim.Adam
 checkpointer: !new:speechbrain.utils.checkpoints.Checkpointer
     checkpoints_dir: !ref <checkpoint_folder>
     recoverables:
-        model: !ref <modules>
+        model: !ref <model> # make no checkpoint exists for mlp in save_folder if you want to train from scratch
         wav2vec2: !ref <wav2vec2>
+        # model: !ref <modules>
+        # wav2vec2: !ref <wav2vec2>

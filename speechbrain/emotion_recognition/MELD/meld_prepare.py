@@ -5,7 +5,7 @@ Script to prepare a custom emotion recognition dataset by converting CSV annotat
 The dataset is organized into three splits: train, test, and eval. Each split contains a folder with .wav files and a CSV file describing the utterances.
 
 Usage:
-    python prepare_custom_dataset.py \
+    python meld_prepare.py \
         --train_path /path/to/train_folder \
         --test_path /path/to/test_folder \
         --eval_path /path/to/eval_folder \
@@ -19,6 +19,7 @@ import argparse
 from datetime import datetime, timedelta
 from pathlib import Path
 import logging
+import wave
 
 # Configure logging
 logging.basicConfig(
@@ -38,29 +39,6 @@ EMOTION_MAPPING = {
     "surprise": "sur",
     "neutral": "neu"
 }
-
-def parse_time(time_str):
-    """
-    Parses a time string formatted as "HH:MM:SS,ms" and returns the time in seconds.
-
-    Args:
-        time_str (str): Time string (e.g., "00:16:16,059")
-
-    Returns:
-        float: Time in seconds.
-    """
-    try:
-        time_obj = datetime.strptime(time_str, "%H:%M:%S,%f")
-        delta = timedelta(
-            hours=time_obj.hour,
-            minutes=time_obj.minute,
-            seconds=time_obj.second,
-            microseconds=time_obj.microsecond
-        )
-        return delta.total_seconds()
-    except ValueError as e:
-        logger.error(f"Time parsing error for '{time_str}': {e}")
-        return None
 
 def process_split(split_path, split_type, output_dir):
     """
@@ -116,29 +94,25 @@ def process_split(split_path, split_type, output_dir):
             emo_mapped = EMOTION_MAPPING[emotion_csv]
             dialogue_id = row['Dialogue_ID'].strip()
             utterance_id = row['Utterance_ID'].strip()
-            speaker = row['Speaker'].strip()
 
             # Construct key
             key = f"{prefix}_{dialogue_id}_{utterance_id}"
 
-            # Construct WAV file path
-            wav_filename = f"dia{dialogue_id}_utt{utterance_id}.wav"
+            # Get WAV file path from the 'filename' column
+            wav_filename = row['filename'].strip()
             wav_path = os.path.join(wav_dir, wav_filename)
             if not os.path.isfile(wav_path):
                 logger.warning(f"WAV file '{wav_path}' does not exist. Skipping entry '{key}'.")
                 continue
 
-            # Calculate length
-            start_time = parse_time(row['StartTime'].strip())
-            end_time = parse_time(row['EndTime'].strip())
-
-            if start_time is None or end_time is None:
-                logger.warning(f"Invalid start or end time for entry '{key}'. Skipping.")
-                continue
-
-            length = end_time - start_time
-            if length <= 0:
-                logger.warning(f"Non-positive length for entry '{key}': {length} seconds. Skipping.")
+            # Calculate length using WAV metadata
+            try:
+                with wave.open(wav_path, 'r') as wav_file:
+                    frames = wav_file.getnframes()
+                    rate = wav_file.getframerate()
+                    length = frames / float(rate)
+            except wave.Error as e:
+                logger.warning(f"Error reading WAV file '{wav_path}': {e}. Skipping entry '{key}'.")
                 continue
 
             # Add entry to JSON dictionary

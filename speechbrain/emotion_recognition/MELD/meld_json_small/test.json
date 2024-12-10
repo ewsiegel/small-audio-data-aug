@@ -2009,6 +2009,11 @@
     "length": 1.941,
     "emo": "hap"
   },
+  "te_38_4": {
+    "wav": "/home/drew/6.7960/small-audio-data-aug/data/test/dia38_utt4.wav",
+    "length": 304.96,
+    "emo": "hap"
+  },
   "te_39_6": {
     "wav": "/home/drew/6.7960/small-audio-data-aug/data/test/dia39_utt6.wav",
     "length": 4.309,

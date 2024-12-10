@@ -58,6 +58,7 @@ def evaluate_model(hparams_file, run_opts, overrides):
     datasets = dataio_prep(hparams)
 
     # Load the model from the checkpoint
+    print(f"loading checkpoint {hparams['checkpointer']}")
     emo_id_brain = EmoIdBrain(
         modules=hparams["modules"],
         opt_class=hparams["opt_class"],
