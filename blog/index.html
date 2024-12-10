@@ -400,7 +400,7 @@
 				</div>
 				<p>
 					After filtering the dataset to only include these labels and splitting into train/test/validation sets, we have
-					roughly 9500 labelled utterances for training, 4500 for testing, and 1000 for validation. Additionally, to
+					roughly 9500 labelled utterances for training, 2500 for testing, and 1000 for validation. Additionally, to
 					simulate having a small training dataset, we sampled 1 of every 4 training datapoints to create a small training
 					dataset of roughly 2350 samples.
 				</p>
@@ -412,8 +412,28 @@
 				</p>
 				<h1>Model for Downstream Task</h1>
 				<p>
-					TODO: paragraph on model for downstream task.
+					For our discriminative downstream task of speech emotion classification, we used a model consisting of two parts: 
+					<ol>
+						<li>Wav2vec2 audio encoder</li>
+						<li>Multi-layer perceptron (MLP)</li>
+					</ol>
 				</p>
+				<p>
+					The wav2vec2 encoder was developed by Meta Research (CITATION) specifically for the downstream task of automatic speech recognition (ASR).
+					However, it provides a rich representation of audio that can be used for other tasks as well, including emotion recognition (CITATION). The model has ~95M parameters.
+				</p>
+				<p>
+					Our MLP is a single layer with no bias. It maps the 768 dimensional representation of the wav2vec2 encoder into one of our 5 classes (anger, joy, neutral, sadness, surprise).
+					This layer has only ~4k parameters.
+				</p>
+				<p>
+					While training, we update all of the weights in our MLP and most of the parameters for the wav2vec2. Specifically, for wav2vec2, we freeze the convolutional layer weights that process the input wav, but update the transformer block weights. These account for ~95% of the model’s parameters.
+				</p>
+				<div style="text-align: center; margin: 20px 0;">
+					<img src="images/Model_Drawing.jpg" width="512px" alt="Model Drawing"/>
+					<p style="margin-top: 5px; font-size: 14px;">Model Architecture</p>
+				</div>
+
 				<h1>Method 1: Pre-training on a large similar dataset, and then fine-tuning on our small dataset.</h1>
 				<p>
 					For our large pre-training dataset that is similar to our Friends emotion classification task, we chose
@@ -514,6 +534,11 @@
 						<td style="border: 1px solid #ddd; padding: 8px;">0.535</td>
 					</tr>
 				</table>
+				<p></p>
+					We observe that the performance gap between the full MELD dataset and the small dataset results in a
+					~9% drop in accuracy. The synthetic pretrained dataset makes up this defecit by about 2%. The IEMOCAP
+					pretrained dataset yields an improvement of only ~.5%.
+				</p>
 				<h1>Wasserstein Distance</h1>
 				<p>
 					The Wasserstein distances between our small training dataset and each of the other datasets revealed an intuitive
