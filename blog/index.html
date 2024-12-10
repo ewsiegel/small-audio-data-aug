@@ -312,11 +312,27 @@
 						this would allow for much more accurate and generalizable training. However, the primary disadvantage is the difficulty
 						in generating high quality synthetic data in the audio domain.
 					</p>
-					<h1>Theoretical Consideration: Wasserstein Distance</h1>
+					<h1>Theoretical Consideration: Quantifying Similarity Between Not Well-Aligned Datasets</h1>
 					<p>
-						The Wasserstein distance, also known as the Earth Mover's Distance (EMD), provides a theoretically
-						rigorous way to measure the similarity between probability distributions. In our context, we can leverage
-						this metric to quantify how "close" two audio datasets are in their embeddingspace. By computing the minimum
+					<p>
+						To quantify difference between our datasets, we had to consider that the datasets were not well-aligned, 
+						meaning they had differences in scale, structure, or temporal alignment that required preprocessing for accurate comparison.
+						At a higher level, the "Friends" dataset comprises conversations from the television show, featuring scripted interactions, 
+						whereas the other datasets consist of spontaneous speech, characterized by informal language, 
+						and varied contextual backgrounds. These inherent differences in language style, structure, and context 
+						lead to distinct distributional properties, making direct comparisons and alignment challenging.
+					</p>
+					<p>
+						Many statistical difference measures exist to quantify difference between two probability distributions (we can think of our datasets as 
+						samples drawn from their respective probability distributions). 
+						Among these, Jensen-Shannon (JS) Divergence, Bhattacharyya Distance, and Wasserstein Distance are prominent. 
+						JS and Bhattacharyya require defined CDFs or PDFs, which aren't easily calculated for the high-dimensional fixed-embeddings generated from our datasets, making them less effective. 
+						In contrast, Wasserstein Distance excels in handling high-dimensional, unaligned data. Therefore, we chose Wasserstein distance as our similarity metric.
+						
+					</p>
+				    	<p>
+						Wasserstein distance provides a theoretically rigorous way to measure the similarity between probability distributions. In our context, we can leverage
+						this metric to quantify how "close" two audio datasets are in their embedding space. By computing the minimum
 						"cost" of transforming the distribution of embeddings from one dataset into another,
 						the Wasserstein distance gives us a meaningful measure of dataset similarity that accounts for both
 						the location and shape of the distributions. This is particularly valuable when comparing our small target
@@ -324,13 +340,35 @@
 						allows us to mathematically validate how well our chosen/generated data aligns with the target
 						distribution. A smaller Wasserstein distance would suggest better potential for transfer learning
 						or synthetic data quality, while larger distances may indicate fundamental distributional differences
-						that could limit performance.
+						that could limit performance. 
+				    	<p>
+						In the context of our project, we first processed all audio samples through
+						<a href="https://huggingface.co/facebook/wav2vec2-base">Facebook's wav2vec2 model</a> to obtain
+						fixed-dimensional embeddings that capture the acoustic features of the speech. Using
+						these embeddings as points in the high-dimensional space, we calculated the Wasserstein distance. This metric helped us understand
+						which datasets were most similar to our small training set in terms of their underlying audio characteristics
+						and validate our approach of using synthetic data and pre-training. 
 					</p>
-					<br>
+			    		<h2>Additional Design Choices</h2>
+			    		<p>
+						To calculate the Wasserstein distance between our datasets, we first need to establish a cost matrix that defines the "cost" of 
+						moving data points from one distribution to another. This matrix is essential for quantifying the effort required to align the two datasets. 
+						Upon analysis, we found that the embedding values ranged between -11 and 11: a relatively small distance that does not require normalization. 
+						Therefore, we selected Euclidean distance as our cost metric for Wasserstein distance calculation due to its simplicity.
+					</p>
+				    	<p>
+						We acknowledge that in high-dimensional datasets, dimensionality-reduction techniques such as Principle Component Analysis
+						(PCA) are important for computational efficiency (both in model training and computing the Wasserstein distance) and noise reduction. 
+						However, <a href="https://arxiv.org/pdf/2006.11477">prior</a> research using our chosen embedding dimension size has demonstrated sufficient results without dimensionality reduction.
+					</p>
+		
+						
+					</p>
 					<p>
 						This project will involve testing an implementation of these two methods, evaluating their performance,
 						then analyzing the results from the mentioned theoretical perspective.
 					</p>
+			    		<br>
 		    </div>
 		    <div class="margin-right-block" style="transform: translate(0%, -100%);"> <!-- you can move the margin notes up and down with translate -->
 		    </div>
@@ -434,35 +472,7 @@
 				<p>
 					TODO: paragraph on fine-tuning on small dataset. how many epochs, hyperparameters, etc.
 				</p>
-				<h1>Wasserstein Distance</h1>
-				<p>
-					To quantitatively evaluate the similarity between our datasets, we had to consider that the datasets were not well-aligned, 
-					meaning they had differences in scale, structure, or temporal alignment that required preprocessing for accurate comparison.
-					At a higher level, the "Friends" dataset comprises conversations from the television show, featuring scripted interactions, 
-					whereas the other datasets consist of spontaneous speech, characterized by informal language, 
-					and varied contextual backgrounds. These inherent differences in language style, structure, and context 
-					lead to distinct distributional properties, making direct comparisons and alignment challenging.
-				</p>
-			    	<p>
-					To address this alignment issue, we chose to compute the Wasserstein distance
-					(also known as Earth Mover's Distance) between our small training dataset and each of our other datasets
-					(full training, test, evaluation, and synthetic), due to its good performance on datasets that are high dimensional
-					and not well-aligned. 
-				</p>
-			    	<p>
-					More specifically, we first processed all audio samples through
-					<a href="https://huggingface.co/facebook/wav2vec2-base">Facebook's wav2vec2 model</a> to obtain
-					fixed-dimensional embeddings that capture the acoustic features of the speech. Using
-					these embeddings as points in the high-dimensional space, we calculated the minimum "cost" of transforming one
-					dataset's distribution into another - this is the Wasserstein distance. This metric helped us understand
-					which datasets were most similar to our small training set in terms of their underlying audio characteristics
-					and validate our approach of using synthetic data and pre-training. 
-				</p>
-			    	<p>
-					We acknowledge that in high-dimensional datasets, dimensionality-reduction techniques such as Principle Component Analysis
-					(PCA) are important for computational efficiency (both in model training and computing the Wasserstein distance) and noise reduction. 
-					However, <a href="https://arxiv.org/pdf/2006.11477">prior</a> research using our chosen embedding dimension size has demonstrated sufficient results without dimensionality reduction.
-				</p>
+
 			</div>
 			<div class="margin-right-block">
 			</div>
