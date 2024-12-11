@@ -402,8 +402,6 @@
 				<p>
 					The large train dataset will only be used as a baseline reference to evaluate the performance of our other
 					experiments.
-
-					TODO put table with all datasets and their sizes
 				</p>
 				<h1>Model for Downstream Task</h1>
 				<p>
@@ -431,7 +429,8 @@
 					For our large pre-training dataset that is similar to our Friends emotion classification task, we chose
 					the <a href="https://sail.usc.edu/iemocap/">IEMOCAP dataset</a>, which contains around 7,500 utterances
 					paired with its corresponding emotion label. The dataset is comprised of actor dialogues speaking English,
-					similar to the Friends dataset.
+					similar to the Friends dataset. After filtering for only our relevant emotion labels, our IEMOCAP dataset
+					had about 4600 utterances mapped to emotions.
 				</p>
 				<div style="text-align: center; margin: 20px 0;">
 					<audio controls style="width: 100%;">
