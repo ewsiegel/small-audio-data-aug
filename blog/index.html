@@ -183,8 +183,8 @@
 
 </style>
 
-	  <title>The Platonic Representation Hypothesis</title>
-      <meta property="og:title" content="The Platonic Representation Hypothesis" />
+	  <title>Coping with Small Audio Data: A Theoretical and Practical Approach</title>
+      <meta property="og:title" content="Coping with Small Audio Data: A Theoretical and Practical Approach" />
 			<meta charset="UTF-8">
   </head>
 
@@ -330,7 +330,7 @@
 						In contrast, Wasserstein Distance excels in handling high-dimensional, unaligned data. Therefore, we chose Wasserstein distance as our similarity metric.
 						
 					</p>
-				    	<p>
+				    <p>
 						Wasserstein distance provides a theoretically rigorous way to measure the similarity between probability distributions. In our context, we can leverage
 						this metric to quantify how "close" two audio datasets are in their embedding space. By computing the minimum
 						"cost" of transforming the distribution of embeddings from one dataset into another,
@@ -349,26 +349,22 @@
 						which datasets were most similar to our small training set in terms of their underlying audio characteristics
 						and validate our approach of using synthetic data and pre-training. 
 					</p>
-			    		<h1>Additional Design Choices</h1>
-			    		<p>
+			    	<h1>Additional Design Choices</h1>
+			    	<p>
 						To calculate the Wasserstein distance between our datasets, we first need to establish a cost matrix that defines the "cost" of 
 						moving data points from one distribution to another. This matrix is essential for quantifying the effort required to align the two datasets. 
 						Upon analysis, we found that the embedding values ranged between -11 and 11: a relatively small distance that does not require normalization. 
 						Therefore, we selected Euclidean distance as our cost metric for Wasserstein distance calculation due to its simplicity.
 					</p>
-				    	<p>
+				    <p>
 						We acknowledge that in high-dimensional datasets, dimensionality-reduction techniques such as Principle Component Analysis
 						(PCA) are important for computational efficiency (both in model training and computing the Wasserstein distance) and noise reduction. 
 						However, <a href="https://arxiv.org/pdf/2006.11477">prior</a> research using our chosen embedding dimension size has demonstrated sufficient results without dimensionality reduction.
-					</p>
-		
-						
 					</p>
 					<p>
 						This project will involve testing an implementation of these two methods, evaluating their performance,
 						then analyzing the results from the mentioned theoretical perspective.
 					</p>
-			    		<br>
 		    </div>
 		    <div class="margin-right-block" style="transform: translate(0%, -100%);"> <!-- you can move the margin notes up and down with translate -->
 		    </div>
@@ -418,8 +414,8 @@
 					</ol>
 				</p>
 				<p>
-					The wav2vec2 encoder was developed by Meta Research (CITATION) specifically for the downstream task of automatic speech recognition (ASR).
-					However, it provides a rich representation of audio that can be used for other tasks as well, including emotion recognition (CITATION). The model has ~95M parameters.
+					The wav2vec2 encoder was developed by <a href="https://ai.meta.com/research/publications/wav2vec-2.0-a-framework-for-self-supervised-learning-of-speech-representations/">Meta Research</a> specifically for the downstream task of automatic speech recognition (ASR).
+					However, it provides a rich representation of audio that can be used for other tasks as well, including <a href="https://arxiv.org/abs/2104.03502">emotion recognition</a>. The model has ~95M parameters.
 				</p>
 				<p>
 					Our MLP is a single layer with no bias. It maps the 768 dimensional representation of the wav2vec2 encoder into one of our 5 classes (anger, joy, neutral, sadness, surprise).
@@ -443,6 +439,7 @@
 						Your browser does not support the audio element.
 					</audio>
 					<p style="margin-top: 5px; font-size: 14px;">Example IEMOCAP Audio Clip</p>
+				</div>
 				<h1>Method 2: Generating synthetic data from our small dataset, pre-training on the synthetic data, and then fine-tuning on our small dataset.</h1>
 				<p>
 					To generate synthetic data from our small dataset, we leveraged Microsoft's
@@ -483,12 +480,47 @@
 					While training, we update all of the weights in our MLP and most of the parameters for the wav2vec2. Specifically, for wav2vec2, we freeze the convolutional layer weights that process the input wav, but update the transformer block weights. These account for ~95% of the model’s parameters.
 
 				</p>
-				<p>
-					full_MELD: 6 epochs, w2v lr 1e-4, mlp lr 1e-3, weight decay 1e-4
-					small_MELD: 4 epochs, w2v lr 1e-4, mlp lr 1e-3, weight decay 1e-4
-					IEMOCAP + small_MELD: 4 epochs IEMOCAP, 4 epochs small_MELD, w2v lr 1e-4, mlp lr 1e-3, weight decay 1e-4
-					synthetic + small_MELD: 4 epochs synthetic, 4 epochs small_MELD, w2v lr 1e-4, mlp lr 1e-3, weight decay 1e-4
-				</p>
+				<table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+					<thead>
+						<tr>
+							<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Dataset</th>
+							<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Epochs</th>
+							<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Wav2Vec2 Learning Rate</th>
+							<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">MLP Learning Rate</th>
+							<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Weight Decay</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 8px;">full_MELD</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">6</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-4</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-3</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-4</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 8px;">small_MELD</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">4</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-4</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-3</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-4</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 8px;">IEMOCAP + small_MELD</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">4 (IEMOCAP), 2 (small_MELD)</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-4</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-3</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-4</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 8px;">synthetic + small_MELD</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">4 (synthetic), 2 (small_MELD)</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-4</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-3</td>
+							<td style="border: 1px solid #ddd; padding: 8px;">1e-4</td>
+						</tr>
+					</tbody>
+				</table>
 
 			</div>
 			<div class="margin-right-block">
